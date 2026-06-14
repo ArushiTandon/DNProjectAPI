@@ -30,13 +30,20 @@ namespace DNProjectAPI.Services
                     };
                 }
 
-                if (existingUser.Password != dto.Password)
+
+                var passwordHasher = new PasswordHasher<string>();
+
+                var verifyPassword = passwordHasher.VerifyHashedPassword(dto.Email, existingUser.Password, dto.Password);
+
+                if(verifyPassword == PasswordVerificationResult.Failed)
                 {
+
                     return new ApiResponseDto<UserResponseDto>
                     {
                         StatusCode = 401,
                         Message = "Invalid password or email"
                     };
+
                 }
 
                 var responseUser = new UserResponseDto
