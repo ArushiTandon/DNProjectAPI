@@ -15,6 +15,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 var app = builder.Build();
 
  // Configure the HTTP request pipeline.
