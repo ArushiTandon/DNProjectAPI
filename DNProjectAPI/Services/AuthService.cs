@@ -1,6 +1,8 @@
 ﻿using DNProjectAPI.Data;
 using DNProjectAPI.Dto;
+using DNProjectAPI.Entity;
 using DNProjectAPI.iService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNProjectAPI.Services
@@ -13,28 +15,112 @@ namespace DNProjectAPI.Services
             _context = context;
         }
 
-        public async Task<Tuple<int, string>> LoginUser(UserDto dto)
+        public async Task<ApiResponseDto<UserResponseDto>> LoginUser(UserDto dto)
         {
             try
             {
                 var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-                if(existingUser == null)
+                if (existingUser == null)
                 {
-                    return new Tuple<int, string>(404, "User not found");
-                }
-                
-                if(existingUser.Password != dto.Password)
-                {
-                    return new Tuple<int, string>(401, "Invalid password");
+                    return new ApiResponseDto<UserResponseDto>
+                    {
+                        StatusCode = 404,
+                        Message = "User not found"
+                    };
                 }
 
-                return new Tuple<int, string>(200, "Login successful");
+                if (existingUser.Password != dto.Password)
+                {
+                    return new ApiResponseDto<UserResponseDto>
+                    {
+                        StatusCode = 401,
+                        Message = "Invalid password or email"
+                    };
+                }
+
+                var responseUser = new UserResponseDto
+                {
+                    Id = existingUser.Id,
+                    Name = existingUser.Name,
+                    Email = existingUser.Email,
+                };
+
+                return new ApiResponseDto<UserResponseDto>
+                {
+                    StatusCode = 200,
+                    Message = "Login successful",
+                    Data = responseUser
+                };
             }
             catch (Exception)
             {
-                return new Tuple<int, string>(500, "An error occurred while processing your request");
+                return new ApiResponseDto<UserResponseDto>
+                {
+                    StatusCode = 500,
+                    Message = "An error occurred while processing your request"
+                };
             }
+        }
+
+        public async Task<ApiResponseDto<UserResponseDto>> RegisterUser(UserDto dto)
+        {
+            try
+            {
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+                if(existingUser != null)
+                {
+                    return new ApiResponseDto<UserResponseDto>
+                    {
+                        StatusCode = 409,
+                        Message = "Email already exists"
+                    };
+
+                }
+
+                var user = new User
+                {
+                    Name = dto.Name,
+                    Email = dto.Email,
+                    Password = PasswordHashing(dto)
+                };
+
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+
+                var responseUser = new UserResponseDto
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email
+                };
+
+                return new ApiResponseDto<UserResponseDto>
+                {
+                    StatusCode = 201,
+                    Message = "User registered successfully",
+                    Data = responseUser
+                };
+            }
+
+            catch(Exception)
+            {
+                return new ApiResponseDto<UserResponseDto>
+                {
+                    StatusCode = 500,
+                    Message = "An error Occured",
+                };
+            }
+        }
+
+        private string PasswordHashing(UserDto dto)
+        {
+            var PassHasher = new PasswordHasher<string>();
+
+            var hash = PassHasher.HashPassword(dto.Email, dto.Password);
+
+            return hash;
         }
     }
 }

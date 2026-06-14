@@ -1,9 +1,12 @@
 ﻿using DNProjectAPI.Dto;
+using DNProjectAPI.Entity;
 
 namespace DNProjectAPI.iService
 {
     public interface IAuthService
     {
-        Task<Tuple<int, string>> LoginUser(UserDto dto);
+        Task<ApiResponseDto<UserResponseDto>> LoginUser(UserDto dto);
+
+        Task<ApiResponseDto<UserResponseDto>> RegisterUser(UserDto dto);
     }
 }
