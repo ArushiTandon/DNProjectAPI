@@ -1,8 +1,8 @@
-﻿namespace DNProjectAPI.Entity
+﻿namespace DNProjectAPI.Dto
 {
-    public class Employee
+    public class EmployeeDto
     {
-        public Guid id { get; set; } 
+        public Guid id { get; set; }
         public string Name { get; set; } = null!;
 
         public string Department { get; set; } = null!;
@@ -14,6 +14,5 @@
         public string Email { get; set; } = null!;
 
         public DateTime? DOB { get; set; }
-
     }
 }
