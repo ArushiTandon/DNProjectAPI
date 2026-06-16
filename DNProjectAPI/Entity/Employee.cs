@@ -13,7 +13,7 @@
 
         public string Email { get; set; } = null!;
 
-        public DateTime? DOB { get; set; }
+        public DateOnly? DOB { get; set; }
 
     }
 }
