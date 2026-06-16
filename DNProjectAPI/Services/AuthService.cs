@@ -4,6 +4,10 @@ using DNProjectAPI.Entity;
 using DNProjectAPI.iService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DNProjectAPI.Services
 {
@@ -121,6 +125,30 @@ namespace DNProjectAPI.Services
             }
         }
 
+
+        private string GetJwtToken(UserDto dto)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, dto.Name),
+                new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
+
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("a88cbc3f35273acd4d62e46edbd00ac90c97b9c6"));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "Arushi-client",
+                audience: "Arushi-backend",
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(1),
+                signingCredentials: creds
+
+                );
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
         private string PasswordHashing(UserDto dto)
         {
             var PassHasher = new PasswordHasher<string>();
