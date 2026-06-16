@@ -71,7 +71,6 @@ namespace DNProjectAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
             try
@@ -94,5 +93,3 @@ namespace DNProjectAPI.Controllers
 
     }
 }
-
-//1dbb83e0 - bfa6 - 4b72 - 9cc6 - 08decb2a79bb
