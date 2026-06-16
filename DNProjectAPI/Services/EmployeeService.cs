@@ -16,7 +16,7 @@ namespace DNProjectAPI.Services
                 var employees = await _context.Employees.AsNoTracking()
                     .Select(e => new EmployeeDto
                 {
-                    id = e.id,
+                    Id = e.Id,
                     Name = e.Name,
                     Email = e.Email,
                     Department = e.Department,
@@ -74,7 +74,7 @@ namespace DNProjectAPI.Services
 
                 var responseEmployee = new EmployeeDto
                 {
-                    id = employee.id,
+                    Id = employee.Id,
                     Name = employee.Name,
                     Email = employee.Email,
                     Department = employee.Department,
@@ -96,6 +96,95 @@ namespace DNProjectAPI.Services
                 {
                     StatusCode = 500,
                     Message = "An unexpected error occur.",
+                };
+            }
+        }
+
+        public async Task<ApiResponseDto<EmployeeDto>> UpdateEmployee(Guid id, EmployeeDto dto)
+        {
+            try
+            {
+                Console.WriteLine(id);
+                var existingEmployee = await _context.Employees
+                    .FirstOrDefaultAsync(e => e.Id == id);
+
+                if (existingEmployee == null)
+                {
+                    return new ApiResponseDto<EmployeeDto>
+                    {
+                        StatusCode = 404,
+                        Message = "Doesn't Exist."
+                    };
+                }
+
+                existingEmployee.Name = dto.Name;
+                existingEmployee.Email = dto.Email;
+                existingEmployee.Salary = dto.Salary;
+                existingEmployee.Position = dto.Position;
+                existingEmployee.Department = dto.Department;
+                existingEmployee.DOB = dto.DOB;
+
+                await _context.SaveChangesAsync();
+
+                var responseEmployee = new EmployeeDto
+                {
+                    Id = existingEmployee.Id,
+                    Name = existingEmployee.Name,
+                    Email = existingEmployee.Email,
+                    Department = existingEmployee.Department,
+                    Position = existingEmployee.Position,
+                    Salary = existingEmployee.Salary,
+                    DOB = existingEmployee.DOB
+                };
+
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 200,
+                    Message = "Employee updated successfully.",
+                    Data = responseEmployee
+                };
+            }
+            catch (Exception)
+            {
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 500,
+                    Message = "An unexpected error occur.",
+                };
+            }
+        }
+
+        public async Task<ApiResponseDto<EmployeeDto>> DeleteEmployee(Guid id)
+        {
+            try
+            {
+                var existingEmployee = await _context.Employees.FindAsync(id);
+
+                if (existingEmployee == null)
+                {
+                    return new ApiResponseDto<EmployeeDto>
+                    {
+                        StatusCode = 404,
+                        Message = "Doesn't Exist."
+                    };
+                }
+
+                _context.Employees.Remove(existingEmployee);
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 200,
+                    Message = "Employee deleted successfully."
+                };
+
+            }
+            catch(Exception ex)
+            {
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 500,
+                    Message = "An unexpected error occurred."
                 };
             }
         }

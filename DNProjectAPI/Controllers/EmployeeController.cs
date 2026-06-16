@@ -3,6 +3,7 @@ using DNProjectAPI.iService;
 using DNProjectAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace DNProjectAPI.Controllers
 {
@@ -49,5 +50,49 @@ namespace DNProjectAPI.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateEmployee(Guid id, [FromBody] EmployeeDto employee)
+        {
+            try
+            {
+                var result = await EmployeeService.UpdateEmployee(id, employee);
+
+                if(result.StatusCode == 404)
+                    return NotFound(result.Message);
+
+
+                return StatusCode(result.StatusCode, result);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+
+        public async Task<IActionResult> DeleteEmployee(Guid id)
+        {
+            try
+            {
+                var result = await EmployeeService.DeleteEmployee(id);
+
+                if (result.StatusCode == 404)
+                    return NotFound(result.Message);
+
+
+                return StatusCode(result.StatusCode, result.Message);
+
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }
+
+//1dbb83e0 - bfa6 - 4b72 - 9cc6 - 08decb2a79bb
