@@ -29,6 +29,25 @@ namespace DNProjectAPI.Controllers
             }
         }
 
+        [HttpGet("GetEmployee/{id}")]
+        public async Task<IActionResult> GetEmployee(Guid id)
+        {
+            try
+            {
+                var result = await EmployeeService.GetEmployee(id);
+
+                if (result.StatusCode == 404)
+                    return NotFound(result.Message);
+
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+
+            }
+        }
+
         [HttpPost("CreateEmployee")]
         public async Task<IActionResult> CreateEmployee([FromBody] EmployeeDto employee)
         {

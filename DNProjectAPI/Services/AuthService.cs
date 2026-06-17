@@ -50,11 +50,18 @@ namespace DNProjectAPI.Services
 
                 }
 
+
+                var token = GetJwtToken(
+                    existingUser.Id,
+                    existingUser.Name);
+
                 var responseUser = new UserResponseDto
                 {
                     Id = existingUser.Id,
                     Name = existingUser.Name,
                     Email = existingUser.Email,
+                    Token = token
+                   
                 };
 
                 return new ApiResponseDto<UserResponseDto>
@@ -62,6 +69,7 @@ namespace DNProjectAPI.Services
                     StatusCode = 200,
                     Message = "Login successful",
                     Data = responseUser
+                   
                 };
             }
             catch (Exception)
@@ -126,27 +134,31 @@ namespace DNProjectAPI.Services
         }
 
 
-        private string GetJwtToken(UserDto dto)
+        private string GetJwtToken(Guid id, string name)
         {
+            //info stored inside jwt token, like a payload.
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, dto.Name),
-                new Claim(ClaimTypes.NameIdentifier, dto.Id.ToString()),
+                 new Claim(ClaimTypes.Name, name),
+                 new Claim(ClaimTypes.NameIdentifier, id.ToString())
 
             };
 
+            //secret signature stamp
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("a88cbc3f35273acd4d62e46edbd00ac90c97b9c6"));
 
+            //sign this token with my secret key.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: "Arushi-client",
                 audience: "Arushi-backend",
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(1),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
 
                 );
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         private string PasswordHashing(UserDto dto)

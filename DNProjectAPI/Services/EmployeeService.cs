@@ -42,6 +42,49 @@ namespace DNProjectAPI.Services
             }
         }   
 
+        public async Task<ApiResponseDto<EmployeeDto>> GetEmployee(Guid id)
+        {
+            try
+            {
+                var employee = await _context.Employees.FindAsync(id);
+
+                if(employee == null)
+                {
+                    return new ApiResponseDto<EmployeeDto>
+                    {
+                        StatusCode = 404,
+                        Message = "Employee not found."
+                    };
+
+                }
+                var responseEmployee = new EmployeeDto
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Email = employee.Email,
+                    Department = employee.Department,
+                    Position = employee.Position,
+                    Salary = employee.Salary,
+                    DOB = employee.DOB,
+                };
+
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 200,
+                    Message = "Employee retrieved successfully",
+                    Data = responseEmployee
+                };
+
+            }
+            catch(Exception ex)
+            {
+                return new ApiResponseDto<EmployeeDto>
+                {
+                    StatusCode = 500,
+                    Message = ex.Message
+                };
+            }
+        }
 
         public async Task<ApiResponseDto<EmployeeDto>> CreateEmployee(EmployeeDto dto)
         {

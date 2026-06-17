@@ -11,5 +11,7 @@ namespace DNProjectAPI.iService
         Task<ApiResponseDto<EmployeeDto>> UpdateEmployee(Guid id, EmployeeDto dto);
 
         Task<ApiResponseDto<EmployeeDto>> DeleteEmployee(Guid id);
+
+        Task<ApiResponseDto<EmployeeDto>> GetEmployee(Guid id);
     }
 }
