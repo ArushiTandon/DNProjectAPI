@@ -17,11 +17,11 @@ namespace DNProjectAPI.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]UserDto user)
+        public async Task<IActionResult> Login([FromBody]LoginDto dto)
         {
             try
             {
-                var result = await _authService.LoginUser(user);
+                var result = await _authService.LoginUser(dto);
 
                 if(result.StatusCode == 404)
                 {

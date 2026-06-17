@@ -19,7 +19,7 @@ namespace DNProjectAPI.Services
             _context = context;
         }
 
-        public async Task<ApiResponseDto<UserResponseDto>> LoginUser(UserDto dto)
+        public async Task<ApiResponseDto<UserResponseDto>> LoginUser(LoginDto dto)
         {
             try
             {
@@ -132,7 +132,6 @@ namespace DNProjectAPI.Services
                 };
             }
         }
-
 
         private string GetJwtToken(Guid id, string name)
         {
